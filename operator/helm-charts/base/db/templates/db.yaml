@@ -14,7 +14,21 @@ spec:
     requests:
       storage: 500Gi
 ---
-apiVersion: extensions/v1beta1
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    zone: secure
+    io.kompose.service: mysql-log
+  name: mysql-log
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
@@ -73,13 +87,17 @@ spec:
         persistentVolumeClaim:
           claimName: mysql-data
       - name: mysql-log
-        emptyDir: {}
+        persistentVolumeClaim:
+          claimName: mysql-log
       - name: mysql-tmp
         emptyDir: {}
       - name: mysqld-run
         emptyDir: {}
       - name: db-tmpfs0
         emptyDir: {}
+  selector:
+    matchLabels:
+      io.kompose.service: db
   {{ end }}
 {{ end }}
 ---
@@ -98,7 +116,7 @@ spec:
   {{- end -}}
 {{- end }}
   ports:
-  - name: db
+  - name: mysql-db
     port: 3306
   selector:
     io.kompose.service: db

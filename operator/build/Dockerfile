@@ -1,4 +1,4 @@
-FROM quay.io/operator-framework/helm-operator:v0.7.0
+FROM quay.io/operator-framework/helm-operator:v0.8.1
 
 # Required OpenShift Labels
 LABEL name="Turbonomic Operator" \
